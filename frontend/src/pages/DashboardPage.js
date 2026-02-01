@@ -1,100 +1,143 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import './DashboardPage.css';
 
 const DashboardPage = () => {
-    // Состояние для списка инцидентов
-    const [incidents, setIncidents] = useState([
-        { id: 'INC-101', title: 'Не работает Wi-Fi в ауд. 302', status: 'В работе', priority: 'Высокий' },
-        { id: 'INC-102', title: 'Ошибка принтера (2 этаж)', status: 'Открыт', priority: 'Средний' },
-    ]);
-
-    // Состояние для полей новой заявки
+    const [incidents, setIncidents] = useState([]);
     const [newTitle, setNewTitle] = useState('');
-    const [newPriority, setNewPriority] = useState('Средний');
 
-    const handleCreateIncident = (e) => {
-        e.preventDefault();
-        if (!newTitle) return;
+    // Filtering states
+    const [filterText, setFilterText] = useState('');
+    const [filterPriority, setFilterPriority] = useState('All');
 
-        const newIncident = {
-            id: `INC-${Math.floor(Math.random() * 1000)}`,
-            title: newTitle,
-            status: 'Открыт',
-            priority: newPriority
-        };
-
-        setIncidents([newIncident, ...incidents]); // Добавляем в начало списка
-        setNewTitle(''); // Очищаем поле
-        alert('Заявка успешно создана (локально)!');
+    const fetchIncidents = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/incidents');
+            const data = await response.json();
+            setIncidents(data);
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
     };
 
-    return (
-        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-            <h2>Панель управления (Dashboard)</h2>
+    useEffect(() => { fetchIncidents(); }, []);
 
-            {/* ФОРМА СОЗДАНИЯ ЗАЯВКИ */}
-            <div style={{
-                backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px',
-                marginBottom: '30px', border: '1px solid #ddd'
-            }}>
-                <h3>🆕 Создать новую заявку</h3>
-                <form onSubmit={handleCreateIncident} style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
-                    <div style={{ flex: 2 }}>
-                        <label style={{ display: 'block', marginBottom: '5px' }}>Что случилось?</label>
-                        <input
-                            type="text"
-                            value={newTitle}
-                            onChange={(e) => setNewTitle(e.target.value)}
-                            placeholder="Напр: Проблема с доступом в почту"
-                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                        />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                        <label style={{ display: 'block', marginBottom: '5px' }}>Приоритет</label>
-                        <select
-                            value={newPriority}
-                            onChange={(e) => setNewPriority(e.target.value)}
-                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                        >
-                            <option value="Низкий">Низкий</option>
-                            <option value="Средний">Средний</option>
-                            <option value="Высокий">Высокий</option>
-                        </select>
-                    </div>
-                    <button type="submit" style={{
-                        padding: '10px 20px', backgroundColor: '#27ae60', color: 'white',
-                        border: 'none', borderRadius: '4px', cursor: 'pointer'
-                    }}>
-                        Создать
-                    </button>
+    const onDragEnd = async (result) => {
+        const { destination, source, draggableId } = result;
+        if (!destination) return;
+        if (destination.droppableId === source.droppableId) return;
+        await updateStatus(draggableId, destination.droppableId);
+    };
+
+    const updateStatus = async (id, status) => {
+        await fetch(`http://localhost:5000/api/incidents/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        fetchIncidents();
+    };
+
+    const handleCreateIncident = async (e) => {
+        e.preventDefault();
+        if (!newTitle) return;
+        await fetch('http://localhost:5000/api/incidents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: newTitle, priority: 'Medium' }) // Default priority
+        });
+        setNewTitle('');
+        fetchIncidents();
+    };
+
+    const deleteIncident = async (id) => {
+        await fetch(`http://localhost:5000/api/incidents/${id}`, { method: 'DELETE' });
+        fetchIncidents();
+    };
+
+    // English Column Names
+    const columns = ['Open', 'In Progress', 'Resolved'];
+
+    // Filtering Logic
+    const filteredIncidents = incidents.filter(inc => {
+        const matchesText = inc.title.toLowerCase().includes(filterText.toLowerCase());
+        const matchesPriority = filterPriority === 'All' || inc.priority === filterPriority;
+        return matchesText && matchesPriority;
+    });
+
+    return (
+        <div className="dashboard-container">
+            <h2 className="dashboard-title">🛰 EOSM Kanban Board</h2>
+
+            <div className="controls-section">
+                {/* Create Form */}
+                <form onSubmit={handleCreateIncident} className="quick-add-form">
+                    <input
+                        type="text" placeholder="+ Add new task"
+                        value={newTitle} onChange={(e) => setNewTitle(e.target.value)}
+                    />
+                    <button type="submit">Create</button>
                 </form>
+
+                {/* Filter Panel */}
+                <div className="filter-panel">
+                    <input
+                        type="text"
+                        placeholder="🔍 Search by title..."
+                        className="filter-input"
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}
+                    />
+                    <select
+                        className="filter-select"
+                        value={filterPriority}
+                        onChange={(e) => setFilterPriority(e.target.value)}
+                    >
+                        <option value="All">All Priorities</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
             </div>
 
-            {/* ТАБЛИЦА ИНЦИДЕНТОВ */}
-            <h3>📋 Список инцидентов</h3>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-                <thead>
-                <tr style={{ backgroundColor: '#f4f4f4', textAlign: 'left' }}>
-                    <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>ID</th>
-                    <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Описание</th>
-                    <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Статус</th>
-                    <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Приоритет</th>
-                </tr>
-                </thead>
-                <tbody>
-                {incidents.map(inc => (
-                    <tr key={inc.id}>
-                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{inc.id}</td>
-                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{inc.title}</td>
-                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-                                <span style={{ padding: '4px 8px', borderRadius: '4px', backgroundColor: '#e8f4fd', fontSize: '12px' }}>
-                                    {inc.status}
-                                </span>
-                        </td>
-                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{inc.priority}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <div className="kanban-board">
+                    {columns.map(columnId => (
+                        <div className="kanban-column" key={columnId}>
+                            <h3>{columnId}</h3>
+                            <Droppable droppableId={columnId}>
+                                {(provided) => (
+                                    <div {...provided.droppableProps} ref={provided.innerRef} className="card-list">
+                                        {filteredIncidents
+                                            .filter(inc => inc.status === columnId)
+                                            .map((inc, index) => (
+                                                <Draggable key={inc.id.toString()} draggableId={inc.id.toString()} index={index}>
+                                                    {(provided) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className="incident-card"
+                                                        >
+                                                            <div className="card-header">
+                                                                <span className="card-id">#{inc.id}</span>
+                                                                <button className="delete-btn" onClick={() => deleteIncident(inc.id)}>×</button>
+                                                            </div>
+                                                            <p>{inc.title}</p>
+                                                            <div className={`priority-tag ${inc.priority}`}>{inc.priority}</div>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        </div>
+                    ))}
+                </div>
+            </DragDropContext>
         </div>
     );
 };
