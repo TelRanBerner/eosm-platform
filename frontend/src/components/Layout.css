@@ -1,0 +1,63 @@
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar {
+    width: 260px;
+    background: #1c1b49; /* Твой основной темный цвет */
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0; /* Чтобы сайдбар не сжимался */
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 40px;
+    color: #f1c40f;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.nav-item {
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1c40f;
+}
+
+.sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.logout-btn {
+    color: #e74c3c;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.content-area {
+    flex-grow: 1;
+    background-color: rgba(206, 163, 225, 0.05); /* Твой легкий фон */
+    padding: 20px;
+    overflow-y: auto;
+}

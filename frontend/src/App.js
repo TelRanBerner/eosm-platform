@@ -1,17 +1,23 @@
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './pages/DashboardPage'; 
 
 function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/dashboard" element={<DashboardPage />} /> {/* Добавь это */}
-                <Route path="*" element={<Navigate to="/login" />} />
+                {/* Публичный маршрут (без сайдбара) */}
+                <Route path="/" element={<LoginPage />} />
+
+                {/* Защищенные маршруты (внутри Layout) */}
+                <Route element={<Layout />}>
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/incidents" element={<div>Incident Management (In Dev)</div>} />
+                    <Route path="/analytics" element={<div>Analytics Center (In Dev)</div>} />
+                </Route>
             </Routes>
         </Router>
     );
