@@ -66,3 +66,51 @@ body {
     padding: 20px;
     overflow-y: auto;
 }
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.status-text {
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #95a5a6;
+}
+
+/* Базовый стиль кружка */
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Состояние: ОНЛАЙН (Зеленый) */
+.dot.online {
+    background-color: #2ecc71;
+    box-shadow: 0 0 8px #2ecc71;
+    animation: blink-green 2s infinite;
+}
+
+/* Состояние: ОФФЛАЙН (Красный) */
+.dot.offline {
+    background-color: #e74c3c;
+    box-shadow: 0 0 8px #e74c3c;
+}
+
+/* Состояние: ПРОВЕРКА (Желтый) */
+.dot.checking {
+    background-color: #f1c40f;
+}
+
+@keyframes blink-green {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
