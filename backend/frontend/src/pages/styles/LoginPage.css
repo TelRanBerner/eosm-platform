@@ -1,0 +1,230 @@
+:root {
+    --bg-dark: #0f172a;
+    --accent-blue: #38bdf8;
+    --accent-purple: #818cf8;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #1e1b4b, #0f172a);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.login-glass-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 35px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    text-align: center;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.login-header .logo-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.login-header h1 {
+    color: var(--text-main);
+    font-size: 26px;
+    letter-spacing: 3px;
+    margin: 0;
+    font-weight: 800;
+}
+
+.login-header p {
+    color: var(--accent-blue);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.input-group {
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    margin-left: 4px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Стилизация выпадающего списка */
+.input-group select option {
+    background: #1e293b;
+    color: white;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.login-submit-btn {
+    margin-top: 8px;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #0f172a;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
+    filter: brightness(1.1);
+}
+
+.login-error-msg {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.login-footer {
+    margin-top: 25px;
+}
+
+.login-footer p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.register-link {
+    color: var(--accent-blue);
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.register-link:hover {
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+    color: white;
+}
+
+/* Фоновое свечение */
+.bg-glow-1, .bg-glow-2 {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 1;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.bg-glow-1 {
+    background: var(--accent-blue);
+    top: -10%;
+    right: -5%;
+}
+
+.bg-glow-2 {
+    background: var(--accent-purple);
+    bottom: -10%;
+    left: -5%;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .login-glass-card {
+        margin: 20px;
+        padding: 25px;
+    }
+}
+/* Ограничиваем ширину карточки и добавляем закругления */
+.login-glass-card {
+    max-width: 380px; /* Сделали чуть уже для изящности */
+    border-radius: 28px; /* Сильное закругление карточки */
+    padding: 40px;
+}
+
+/* Стили полей ввода */
+.input-group input {
+    width: 100%;
+    box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+    padding: 14px 18px;
+    border-radius: 16px; /* Закругленные края у полей */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.5);
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #38bdf8;
+    background: rgba(15, 23, 42, 0.8);
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+}
+
+/* Кнопка */
+.login-submit-btn {
+    border-radius: 16px; /* Закругленная кнопка */
+    padding: 16px;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+/* Убираем лишние отступы в группе */
+.input-group {
+    margin-bottom: 5px;
+}
